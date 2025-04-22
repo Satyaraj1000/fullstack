@@ -2,7 +2,6 @@ import { useState } from "react";
 import axios from "../api/axiosInstance";
 import { toast } from "react-toastify";
 
-
 const ProductForm = ({ refresh }) => {
   const [form, setForm] = useState({
     name: "",
@@ -13,24 +12,40 @@ const ProductForm = ({ refresh }) => {
     features: "",
     applications: "",
     industries: "",
-    image: null,
+    images: [], // now an array
   });
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setForm({ ...form, [name]: files ? files[0] : value });
+
+    if (name === "images") {
+      if (files.length > 3) {
+        toast.error("You can upload a maximum of 3 images.");
+        return;
+      }
+      setForm((prev) => ({ ...prev, images: Array.from(files) }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
+
+    // Append text fields
     Object.entries(form).forEach(([key, val]) => {
       if (["features", "applications", "industries"].includes(key)) {
         formData.append(key, JSON.stringify(val.split(",")));
-      } else {
+      } else if (key !== "images") {
         formData.append(key, val);
       }
+    });
+
+    // Append image files
+    form.images.forEach((img) => {
+      formData.append("images", img);
     });
 
     try {
@@ -48,48 +63,12 @@ const ProductForm = ({ refresh }) => {
       <h2 className="text-2xl font-semibold text-gray-700 text-center">Add New Product</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <input
-          name="name"
-          placeholder="Name"
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        <input
-          name="slug"
-          placeholder="Slug"
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        <input
-          name="category"
-          placeholder="Category"
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        <input
-          name="features"
-          placeholder="Features (comma-separated)"
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        <input
-          name="applications"
-          placeholder="Applications (comma-separated)"
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        <input
-          name="industries"
-          placeholder="Industries (comma-separated)"
-          onChange={handleChange}
-          required
-          className="input"
-        />
+        <input name="name" placeholder="Name" onChange={handleChange} required className="input" />
+        <input name="slug" placeholder="Slug" onChange={handleChange} required className="input" />
+        <input name="category" placeholder="Category" onChange={handleChange} required className="input" />
+        <input name="features" placeholder="Features (comma-separated)" onChange={handleChange} required className="input" />
+        <input name="applications" placeholder="Applications (comma-separated)" onChange={handleChange} required className="input" />
+        <input name="industries" placeholder="Industries (comma-separated)" onChange={handleChange} required className="input" />
       </div>
 
       <textarea
@@ -108,11 +87,12 @@ const ProductForm = ({ refresh }) => {
       />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Product Image</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Product Images (up to 3)</label>
         <input
           type="file"
-          name="image"
+          name="images"
           accept="image/*"
+          multiple
           onChange={handleChange}
           required
           className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4
