@@ -30,20 +30,28 @@ export const getProducts = async (req, res) => {
     res.json({ success: true, products });
   } catch (error) {
     console.error("Error fetching products:", error);
-    res.status(500).json({ success: false, message: "Failed to fetch products" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch products" });
   }
 };
 
 export const getProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findOne({ slug: req.params.slug });
+    
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
     }
+
     res.json({ success: true, product });
   } catch (error) {
     console.error("Error fetching product:", error);
-    res.status(500).json({ success: false, message: "Failed to fetch product" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to fetch product" });
   }
 };
 
@@ -72,13 +80,21 @@ export const addProduct = async (req, res) => {
       !req.files ||
       req.files.length === 0
     ) {
-      return res.status(400).json({ success: false, message: "Missing Details" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing Details" });
     }
 
     // Parse stringified fields
-    const featureList = Array.isArray(features) ? features : JSON.parse(features || "[]");
-    const applicationList = Array.isArray(applications) ? applications : JSON.parse(applications || "[]");
-    const industryList = Array.isArray(industries) ? industries : JSON.parse(industries || "[]");
+    const featureList = Array.isArray(features)
+      ? features
+      : JSON.parse(features || "[]");
+    const applicationList = Array.isArray(applications)
+      ? applications
+      : JSON.parse(applications || "[]");
+    const industryList = Array.isArray(industries)
+      ? industries
+      : JSON.parse(industries || "[]");
 
     // Upload each image to Cloudinary
     const imageUploads = await Promise.all(
@@ -102,7 +118,9 @@ export const addProduct = async (req, res) => {
 
     await newProduct.save();
 
-    res.status(201).json({ success: true, message: "Product added", product: newProduct });
+    res
+      .status(201)
+      .json({ success: true, message: "Product added", product: newProduct });
   } catch (error) {
     console.error("Error adding product:", error.message);
     res.status(500).json({ success: false, message: error.message });
@@ -114,12 +132,16 @@ export const deleteProduct = async (req, res) => {
     const { id } = req.body;
 
     if (!id) {
-      return res.status(400).json({ success: false, message: "Product ID is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Product ID is required" });
     }
 
     const product = await Product.findById(id);
     if (!product) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
     }
 
     await Product.findByIdAndDelete(id);
@@ -127,6 +149,8 @@ export const deleteProduct = async (req, res) => {
     res.json({ success: true, message: "Product deleted successfully" });
   } catch (error) {
     console.error("Error deleting product:", error);
-    res.status(500).json({ success: false, message: "Failed to delete product" });
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to delete product" });
   }
 };

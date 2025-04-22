@@ -7,10 +7,7 @@ export const connectDb = async () => {
       throw new Error("Database connection error: Missing DB_URL in environment variables.");
     }
 
-    await mongoose.connect(process.env.DB_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(process.env.DB_URL);
 
     console.log("✅ Successfully connected to the database.");
   } catch (error) {

@@ -7,7 +7,7 @@ const ProductList = () => {
   const fetchProducts = async () => {
     try {
       const res = await axios.get("/products");
-      setProducts(res.data.products);
+      setProducts(res.data.products); 
     } catch (err) {
       console.error("Error fetching products:", err);
     }

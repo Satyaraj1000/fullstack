@@ -38,10 +38,10 @@ const EnquiryList = () => {
             </p>
           )}
           <p>
-            <strong>Message:</strong> {e.message}
+            <strong>Quantiy:</strong> {e.quantity}
           </p>
-          <p className="text-sm text-gray-500">
-            {new Date(e.createdAt).toLocaleString()}
+          <p>
+            <strong>Message:</strong> {e.requirements}
           </p>
         </div>
       ))}
